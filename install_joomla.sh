@@ -15,7 +15,6 @@ sudo systemctl start mariadb
 echo "CREATE DATABASE ${DB}" | mysql -u root --password=
 echo "CREATE USER '${DBUSER}'@'localhost' IDENTIFIED BY '${DBPASS}';" | mysql -u root --password=
 echo "GRANT ALL ON ${DB}.* TO '${DBUSER}'@'%';" | mysql -u root --password=
-sed -i "s/#__/${DBPREFIX}/" installation/sql/mysql/joomla.sql
 cat installation/sql/mysql/joomla.sql | mysql -u $DBUSER --password=$DBPASS $DB
 
 sudo wget https://downloads.joomla.org/cms/joomla3/3-9-16/Joomla_3-9-16-Stable-Full_Package.zip
@@ -40,6 +39,7 @@ sudo tee /etc/httpd/conf.d/joomla.conf <<- 'EOF'
 </VirtualHost>
 EOF
 
+sudo rm -f Joomla_3-9-16-Stable-Full_Package.zip
 systemctl restart httpd
 
 echo "For this Stack, you will use $(ip -f inet addr show enp0s8 | sed -En -e 's/.*inet ([0-9.]+).*/\1/p') IP Address"
