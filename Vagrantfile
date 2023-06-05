@@ -35,7 +35,7 @@ Vagrant.configure("2") do |config|
         v.cpus = cpu_app
       end
       app.vm.provision :shell do |shell|
-        shell.path = "install_tools.sh"
+        shell.path = "install_joomla.sh"
         shell.args = ["node", "192.168.99.10"]
       end
     end

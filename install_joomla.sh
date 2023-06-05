@@ -1,33 +1,45 @@
 
 #!/bin/bash
-yum -y update
-yum -y install epel-release
-yum install -y python3 git
-if [ $1 == "master" ]
-then
+JUSERNAME="admin"
+JUSEREMAIL="admin@localhost.com"
+JUSERPASS=""
+DB="joomladb"
+DBUSER="admin"
+DBPASS="admin"
 
-  # install Joomla
-  wget https://downloads.joomla.org/cms/joomla4/4-3-2/Joomla_4-3-2-Stable-Full_Package.zip?format=zip -P /Joomla
-  apt-get install unzip
-  unzip /Users/user11/Desktop/Projet-A/vagrant/Joomla_4-3-2-Stable-Full_Package.zip /Users/user11/Desktop/Projet-A/vagrant/Joomla
-  cd /Desktop/Projet-A/Joomla
-  # /usr/local/bin/pip3 install Joomla.zip
-  yum install -y sshpass
-  
-  # Install zsh if needed
-if [[ !(-z "$ENABLE_ZSH")  &&  ($ENABLE_ZSH == "true") ]]
-    then
-      echo "We are going to install zsh"
-      sudo yum -y install zsh git
-      echo "vagrant" | chsh -s /bin/zsh vagrant
-      su - vagrant  -c  'echo "Y" | sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"'
-      su - vagrant  -c "git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting"
-      sed -i 's/^plugins=/#&/' /home/vagrant/.zshrc
-      echo "plugins=(git  colored-man-pages aliases copyfile  copypath zsh-syntax-highlighting jsontools)" >> /home/vagrant/.zshrc
-      sed -i "s/^ZSH_THEME=.*/ZSH_THEME='agnoster'/g"  /home/vagrant/.zshrc
-    else
-      echo "The zsh is not installed on this server"
-  fi
+sudo yum -y update
+sudo yum install httpd mariadb mariadb-server php php-mysql -y
+sudo yum install nano unzip -y
+sudo systemctl start mariadb
 
-fi
+echo "CREATE DATABASE ${DB}" | mysql -u root --password=
+echo "CREATE USER '${DBUSER}'@'localhost' IDENTIFIED BY '${DBPASS}';" | mysql -u root --password=
+echo "GRANT ALL ON ${DB}.* TO '${DBUSER}'@'%';" | mysql -u root --password=
+sed -i "s/#__/${DBPREFIX}/" installation/sql/mysql/joomla.sql
+cat installation/sql/mysql/joomla.sql | mysql -u $DBUSER --password=$DBPASS $DB
+
+sudo wget https://downloads.joomla.org/cms/joomla3/3-9-16/Joomla_3-9-16-Stable-Full_Package.zip
+sudo unzip Joomla_3-9-16-Stable-Full_Package.zip -d /var/www/html
+sudo chown -R apache:apache /var/www/html
+sudo chmod 755 /var/www/html
+
+sudo tee /etc/httpd/conf.d/joomla.conf <<- 'EOF'
+<VirtualHost *:80>
+     ServerAdmin admin@example.com
+     DocumentRoot "/var/www/html"
+     ServerName joomla.example.com
+     ErrorLog "/var/log/httpd/example.com-error_log"
+     CustomLog "/var/log/httpd/example.com-access_log" combined
+
+<Directory "/var/www/html">
+     DirectoryIndex index.html index.php
+     Options FollowSymLinks
+     AllowOverride All
+     Require all granted
+</Directory>
+</VirtualHost>
+EOF
+
+systemctl restart httpd
+
 echo "For this Stack, you will use $(ip -f inet addr show enp0s8 | sed -En -e 's/.*inet ([0-9.]+).*/\1/p') IP Address"
