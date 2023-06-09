@@ -56,7 +56,7 @@ server {
     listen 80;
     listen 192.168.99.10:80;
     server_name nginx;
-    return 301 https://$host$request_uri;
+    return 301 https://$host$request_url;
 }
 EOF
 

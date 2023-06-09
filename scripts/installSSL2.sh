@@ -1,12 +1,11 @@
 #!/bin/bash
-
+# sudo -i
 sudo yum update
 
-sudo mkdir /vagrant/nginx/ssl
-sudo mkdir /etc/ssl/privat
+sudo mkdir /etc/ssl/private
 
 #creation d'une répertoire
-mkdir /vagrant/ngix/ssl
+sudo mkdir /vagrant/nginx/ssl
 sudo yum -y install openssl  openssl-devel -y
 sudo yum -y install mod_ssl
 
@@ -32,8 +31,7 @@ source /etc/profile.d/openssl.shf
 sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
  -keyout /etc/ssl/private/nginx-selfsigned.key -out /etc/ssl/certs/nginx-selfsigned.crt \
  -subj "/C=France/ST=Rhône/L=Lyon/O=Its/OU=aa/CN=commonName/emailAddress=test@example.com"
-#pour renforcer la clé, on peut utiliser les groupes Diffie-Hellman
-sudo openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048
+
 #Créer le TLS/SSL dans le fichier ssl.conf
 sudo tee nano /etc/nginx/conf.d/ssl.conf <<- 'EOF'
     server {
@@ -50,9 +48,12 @@ server {
     listen 80;
     listen 192.168.99.10:80;
     server_name nginx;
-    return 301 https://$host$request_uri;
+    return 301 https://$host$request_uri;  #301->une redirection permanente pour navigateur ou engine 
 }
 EOF
+
+#pour renforcer la clé, on peut utiliser les groupes Diffie-Hellman
+sudo openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048
 
 sudo chmod 700 /etc/ssl/private
 

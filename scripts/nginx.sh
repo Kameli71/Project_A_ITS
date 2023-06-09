@@ -31,5 +31,5 @@ sudo systemctl restart nginx
 if sudo systemctl is-active nginx >/dev/null; then
     echo "Nginx est installer ! genix est en cours d'excusion."
 else
-    echo "L'installation de Nginx a échoué !"
+    echo "L'installation de Nginx a échoué"
 fi
