@@ -16,7 +16,7 @@ Vagrant.configure("2") do |config|
       v.cpus = 1
     end
     myhaproxy.vm.provision :shell do |shell|
-      shell.path = "install_tools.sh"
+      shell.path = "scripts/nginx.sh"
       shell.args = ["master", "192.168.99.10"]
       
     end
@@ -35,7 +35,7 @@ Vagrant.configure("2") do |config|
         v.cpus = cpu_app
       end
       app.vm.provision :shell do |shell|
-        shell.path = "install_joomla.sh"
+        shell.path = "scripts/install_joomla.sh"
         shell.args = ["node", "192.168.99.10"]
       end
     end
