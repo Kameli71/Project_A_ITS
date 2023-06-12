@@ -64,7 +64,7 @@ sudo mkfs.ext4 /dev/volgrp01/lv01
 
 # 7 ) To use above formatted partition, we must mount it on some folder. So, let’s create a folder /mnt/data
 sudo mkdir /mnt/data
-sudo chmod 770 /mnt/data
+sudo chmod 777 /mnt/data
 
 # 8 ) Run mount command to mount it on /mnt/data folder
 sudo mount /dev/volgrp01/lv01 /mnt/data/
@@ -73,7 +73,9 @@ sudo mount /dev/volgrp01/lv01 /mnt/data/
 df -Th /mnt/data/
 
 # 10 ) Dump MySQL backup in the new partition directory
-sudo mysqldump -u root -p joomladb > /mnt/data/joomladb-"backup_$(date +"%Y_%m_%d_%I_%M_%p").sql"
+# sudo chmod 766 /mnt/data/joomladb.sql
+sudo mysqldump -u root -p --skip-password joomladb > /mnt/data/joomladb.sql 2>/dev/null 
+
 
 
 

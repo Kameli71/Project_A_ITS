@@ -44,22 +44,21 @@ Vagrant.configure("2") do |config|
         shell.path = "scripts/install_joomla1.sh"
         shell.args = ["node", "192.168.99.10"]
       end
+    end    
+    config.vm.define "app2" do |app|
+      app.vm.box = "geerlingguy/centos7"
+      app.vm.network "private_network", type: "static", ip: "192.168.99.12"
+      app.vm.hostname = "app2"
+      app.vm.provider "virtualbox" do |v|
+        v.customize ['createhd', '--filename', 'app2disk1.vmdk', '--size', "4124"]
+        v.customize ['storageattach', :id, '--storagectl', 'IDE Controller', '--port', "1", '--device', "0", '--type', 'hdd', '--medium', 'app2disk1.vmdk']
+      v.name = "app2"
+        v.memory = ram_app
+        v.cpus = cpu_app
+      end
+      app.vm.provision :shell do |shell|
+        shell.path = "scripts/install_joomla1.sh"
+        shell.args = ["node", "192.168.99.10"]
+      end
     end
-    
-config.vm.define "app2" do |app|
-  app.vm.box = "geerlingguy/centos7"
-  app.vm.network "private_network", type: "static", ip: "192.168.99.12"
-  app.vm.hostname = "app2"
-  app.vm.provider "virtualbox" do |v|
-    v.customize ['createhd', '--filename', 'app2disk1.vmdk', '--size', "4124"]
-    v.customize ['storageattach', :id, '--storagectl', 'IDE Controller', '--port', "1", '--device', "0", '--type', 'hdd', '--medium', 'app2disk1.vmdk']
-  v.name = "app2"
-    v.memory = ram_app
-    v.cpus = cpu_app
   end
-  app.vm.provision :shell do |shell|
-    shell.path = "install_joomla.sh"
-    shell.args = ["node", "192.168.99.10"]
-  end
-end
-end
