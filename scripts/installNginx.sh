@@ -1,11 +1,14 @@
 #!/bin/bash
 
-#Adding the EPEL Software et puis Installer NGINX
-sudo yum install epel-release
-sudo yum update
+# Adding the EPEL Software and Installing NGINX
+sudo yum install epel-release -y
+sudo yum install deltarpm -y
+sudo yum update -y
 sudo yum install nginx -y
-sudo yum install start nginx 
-sudo yum install status nginx
+
+# Start and enable NGINX
+sudo systemctl start nginx
+sudo systemctl enable nginx
 
 # Create Load Balancer configuration
 sudo tee /etc/nginx/conf.d/load_balancer.conf > /dev/null <<EOF
@@ -31,5 +34,5 @@ sudo systemctl restart nginx
 if sudo systemctl is-active nginx >/dev/null; then
     echo "Nginx est installer ! genix est en cours d'excusion."
 else
-    echo "L'installation de Nginx a échoué"
+    echo "L'installation de Nginx a échoué !"
 fi
